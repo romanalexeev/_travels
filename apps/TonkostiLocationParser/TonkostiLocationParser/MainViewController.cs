@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using TonkostiLocationParser.Db;
 using TonkostiLocationParser.Domain;
 using TonkostiLocationParser.Parse;
 
@@ -11,8 +12,10 @@ namespace TonkostiLocationParser
 {
 	public class MainViewController
 	{
-		private const string CountriesFilePath = "../../../../../text/countries.json";
-		private const string LocationsFilePath = "../../../../../text/locations_{0}.json";
+		private const string CountriesSqliteFilePath = "../../../../../db/tonkosti_locations.db";
+
+		private const string CountriesJsonFilePath = "../../../../../text/countries.json";
+		private const string LocationsJsonFilePath = "../../../../../text/locations_{0}.json";
 
 		private readonly MainViewModel _viewModel;
 		public MainViewModel ViewModel { get { return _viewModel; } }
@@ -25,16 +28,25 @@ namespace TonkostiLocationParser
 			//_viewModel.CountryList.Add(new Country("qwer", "/qwer", false));
 		}
 
-		public void SaveCountries()
+		public void SaveCountriesJson()
 		{
 			string contents = JsonConvert.SerializeObject(ViewModel.Countries);
 
-			File.WriteAllText(CountriesFilePath, contents);
+			File.WriteAllText(CountriesJsonFilePath, contents);
+		}
+
+
+		public void SaveCountriesSqlite()
+		{
+			if (ViewModel.Countries != null)
+			{
+				SqliteCountriesSaver.Save(ViewModel.Countries, CountriesSqliteFilePath);
+			}
 		}
 
 		public void LoadCountries()
 		{
-			string contents = File.ReadAllText(CountriesFilePath);
+			string contents = File.ReadAllText(CountriesJsonFilePath);
 
 			ViewModel.Countries = JsonConvert
 				.DeserializeObject<List<Country>>(contents)
@@ -43,9 +55,7 @@ namespace TonkostiLocationParser
 
 		public void ParseCountries()
 		{
-			CountriesParser parser = new CountriesParser();
-
-			List<Country> countryList = parser.Parse();
+			List<Country> countryList = CountriesParser.Parse();
 
 			ViewModel.Countries = countryList.ToObservableCollection();
 		}
@@ -57,7 +67,7 @@ namespace TonkostiLocationParser
 			{
 				string contents = JsonConvert.SerializeObject(ViewModel.SelectedCountry.Locations);
 
-				File.WriteAllText(string.Format(LocationsFilePath, ViewModel.SelectedCountry.Name), contents);
+				File.WriteAllText(string.Format(LocationsJsonFilePath, ViewModel.SelectedCountry.Name), contents);
 			}
 		}
 
@@ -65,7 +75,7 @@ namespace TonkostiLocationParser
 		{
 			if (ViewModel.SelectedCountry != null)
 			{
-				string contents = File.ReadAllText(string.Format(LocationsFilePath, ViewModel.SelectedCountry.Name));
+				string contents = File.ReadAllText(string.Format(LocationsJsonFilePath, ViewModel.SelectedCountry.Name));
 
 				List<Location> locationList = JsonConvert
 					.DeserializeObject<List<Location>>(contents);
@@ -80,9 +90,7 @@ namespace TonkostiLocationParser
 		{
 			if (ViewModel.SelectedCountry != null)
 			{
-				LocationsParser parser = new LocationsParser();
-
-				List<Location> locationList = parser.Parse(ViewModel.SelectedCountry);
+				List<Location> locationList = LocationsParser.Parse(ViewModel.SelectedCountry);
 
 				ViewModel.SelectedCountry.Locations.Reload(locationList);
 
@@ -104,6 +112,7 @@ namespace TonkostiLocationParser
 				}
 			}
 		}
+
 
 	}
 }

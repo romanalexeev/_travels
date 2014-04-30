@@ -8,9 +8,9 @@ using TonkostiLocationParser.Domain;
 
 namespace TonkostiLocationParser.Parse
 {
-	public class LocationsParser
+	public static class LocationsParser
 	{
-		public List<Location> Parse(Country country)
+		public static List<Location> Parse(Country country)
 		{
 			if (country == null)
 				throw new ArgumentNullException("country");

@@ -32,13 +32,27 @@ namespace TonkostiLocationParser
 			ExceptionTextBlock.Visibility = Visibility.Collapsed;
 		}
 
-		private void OnSaveCountriesButtonClick(object sender, RoutedEventArgs e)
+		private void OnSaveCountriesJsonButtonClick(object sender, RoutedEventArgs e)
 		{
 			HideException();
 
 			try
 			{
-				_controller.SaveCountries();
+				_controller.SaveCountriesJson();
+			}
+			catch (Exception ex)
+			{
+				ShowException(ex);
+			}
+		}
+
+		private void OnSaveCountriesSqliteButtonClick(object sender, RoutedEventArgs e)
+		{
+			HideException();
+
+			try
+			{
+				_controller.SaveCountriesSqlite();
 			}
 			catch (Exception ex)
 			{

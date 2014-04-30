@@ -7,9 +7,9 @@ using TonkostiLocationParser.Domain;
 
 namespace TonkostiLocationParser.Parse
 {
-	public class CountriesParser
+	public static class CountriesParser
 	{
-		public List<Country> Parse(bool withLocations = false)
+		public static List<Country> Parse(bool withLocations = false)
 		{
 			List<Country> countryList = new List<Country>();
 
